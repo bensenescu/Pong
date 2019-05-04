@@ -2,7 +2,7 @@
 var gameWidth = 750;
 var gameHeight = 600;
 var isGameStarted = false;
-var isGameOver;
+var isGameOver = false;
 var isRoundOver;
 var isFatalCollision;
 var lives = 3;
@@ -66,6 +66,7 @@ function draw() {
   }
 }
 
+//initialize the state of a new game or round
 function intializeGame() {
   console.log("intializeGame");
   xBallChange = 5;
@@ -103,29 +104,39 @@ function drawRectangle(x, y, w, h) {
   rect(x, y, w, h);
 }
 
+//detects if the ball collides with a wall or the paddle
 function detectCollision() {
-  //console.log('detectCollision')
+  //detects collision with top wall
   if (yBall < diameter / 2 || yBall > gameHeight - diameter / 2) {
     yBallChange *= -1;
+    
+    //detects collisions with either side wall
   } else if (xBall < diameter / 2 || xBall > gameWidth - diameter / 2) {
     xBallChange *= -1;
+
+    //detects collsion with paddle
   } else if (yBall >= (yPaddle - diameter / 2) && (xBall > xPaddle && (xBall  < xPaddle + paddleWidth))) {
     yBallChange *= -1;
     score++;
+
+    //TODO: fix this so that it doesnt just stop the game from working when it hits the side
+    //checks if it hit the side of the paddle so that it doesnt just float through the paddle
+    //and hit the bottom.
   } else if (yBall >= (yPaddle - diameter / 2) && (xBall > xPaddle - diameter /2 && (xBall  < xPaddle + paddleWidth + diameter /2))) {
     xBallChange *= -1;
     isFatalCollision = true;
   }
 }
 
+//detects if the ball hit the bottom wall
+//changes the round state to over
 function detectRoundOver() {
-  //console.log('detectRoundOver')
   if (yBall + diameter / 2 > gameHeight) {
-    console.log("round is over")
     isRoundOver = true;
   }
 }
 
+//moves the paddle left or right based off of key movements
 function keyPressed() {
   if (keyCode === LEFT_ARROW) {
     if(xPaddle < 50) {
@@ -142,6 +153,8 @@ function keyPressed() {
   }
 }
 
+//restart the round through initialize game and take away a life
+//if the player is out of lives, change the isGameOver state to true
 function restartRound() {
   if (lives === 0){
     isGameOver = true;
